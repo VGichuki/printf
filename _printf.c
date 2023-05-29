@@ -1,50 +1,36 @@
 #include "main.h"
-
 /**
- * _printf - craetes printf
- *
- * @format: format specifier
- *
- * Return: Number of args length
+ * _printf - print formatted string
+ * @format: string
+ * Return: to count of characs printed
  */
 int _printf(const char *format, ...)
 {
-	int (*get_f_spec)(va_list);
-	unsigned int index = 0, spec_count = 0;
-
-	va_list arg;
-
-	va_start(arg, format);
+	int printed_chars;
+	Conversion conversion_list[] = {
+		{"c", print_character},
+		{"s", print_string},
+		{"%", print_percent},
+		{"d", print_integer},
+		{"i", print_integer},
+		{"b", print_binary},
+		{"r", print_reversed},
+		{"R", rotate_13},
+		{"u", print_unsigned_integer},
+		{"o", print_octal},
+		{"x", print_hexadecimal},
+		{"X", print_HEXADECIMAL},
+		{NULL, NULL}
+	};
+	va_list arg_list;
 
 	if (format == NULL)
 		return (-1);
 
-	for (index = 0; format[index] != '\0'; index++)
-	{
-		if (format[index] == '%')
-		{
-			index++;
-			if (format[index] == '\0')
-				return (-1);
-			while (format[index] == ' ')
-				index++;
-			get_f_spec = get_specifier(format[index]);
+	va_start(arg_list, format);
+	printed_chars = parse_format(format, conversion_list, arg_list);
+	va_end(arg_list);
 
-			if (get_f_spec == NULL)
-			{
-				_putchar('%');
-				_putchar(format[index]);
-				spec_count += 2;
-			}
-			else
-				spec_count += get_f_spec(arg);
-		}
-		else
-		{
-			_putchar(format[index]);
-			spec_count++;
-		}
-	}
-	va_end(arg);
-	return (spec_count);
+	return (printed_chars);
 }
+
